@@ -35,9 +35,6 @@ resource "azurerm_lb" "lb" {
   tags = var.tags
 }
 
-# -
-# - Load Balancer Backend Address Pool
-# -
 resource "azurerm_network_interface_backend_address_pool_association" "backend_addresses" { // Not required
   for_each                = local.backend_addresses
   network_interface_id    = each.value.network_interface_id
@@ -53,15 +50,11 @@ locals {
 }
 
 resource "azurerm_lb_backend_address_pool" "address_pool" {
-  for_each = var.backend_address_pools
-  name     = each.key
-  # resource_group_name = var.rg_name
+  for_each        = var.backend_address_pools
+  name            = each.key
   loadbalancer_id = azurerm_lb.lb.id
 }
 
-# -
-# - Load Balancer Probe
-# -
 resource "azurerm_lb_probe" "lb_probe" {
   for_each            = var.load_balancer_probes
   name                = each.key
@@ -72,10 +65,6 @@ resource "azurerm_lb_probe" "lb_probe" {
   interval_in_seconds = each.value.probe_interval
   number_of_probes    = each.value.probe_unhealthy_threshold
 }
-
-# -
-# - Load Balancer Rule
-# -
 
 resource "azurerm_lb_rule" "rule" {
   for_each                       = var.load_balancer_rules
